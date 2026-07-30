@@ -1,0 +1,21 @@
+# Node modules
+node_modules/
+**/node_modules/
+
+# Python cache & virtual environments
+__pycache__/
+**/__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.venv/
+**/venv/
+**/env/
+
+# Logs
+*.log
+.run_logs/
+
+# Operating system files
+.DS_Store
+Thumbs.db
