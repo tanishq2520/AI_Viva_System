@@ -1,0 +1,935 @@
+You are acting as a **Senior Software Architect and Codebase Analyst**.
+
+I have inherited this project after multiple team members worked on different modules independently and later merged everything together.
+
+The project is an **AI-based Viva / Interview System**.
+
+I currently do NOT fully understand:
+
+* how the complete project starts,
+* which services communicate with which,
+* how the backend works,
+* which files are actually important,
+* why multiple command prompt / terminal windows open,
+* what each terminal is running,
+* which ports/services are involved,
+* where data enters and exits,
+* how the teacher and student modules connect,
+* how questions are generated/stored/fetched,
+* how speech is handled,
+* how evaluation happens,
+* how student results are stored and retrieved.
+
+Your task is to perform a **complete architectural analysis of the existing codebase**.
+
+IMPORTANT RULES:
+
+1. DO NOT modify any code.
+2. DO NOT refactor anything.
+3. DO NOT delete files.
+4. DO NOT install or upgrade dependencies.
+5. DO NOT assume architecture from file names alone.
+6. Actually inspect source files, imports, API calls, routes, configuration files, scripts, environment variables, databases, subprocess calls, ports, frontend requests, backend endpoints, and startup scripts.
+7. Trace the real execution flow from the code.
+8. Clearly distinguish:
+
+   * confirmed behavior from code,
+   * probable behavior,
+   * unused/dead/duplicate code,
+   * things that cannot yet be determined.
+
+The goal is to help another architect understand this system without manually reading the whole repository.
+
+---
+
+# 1. FIRST: CREATE A PROJECT INVENTORY
+
+Scan the entire repository and provide a clean directory overview.
+
+Do NOT dump every generated or dependency file.
+
+Ignore irrelevant folders/files such as:
+
+* node_modules
+* .git
+* **pycache**
+* build
+* dist
+* cache
+* temporary files
+* IDE configuration
+* generated binaries
+
+Instead, identify meaningful folders and files.
+
+For every important folder/file explain:
+
+* path
+* purpose
+* language/framework
+* whether it is actively used
+* which module it belongs to
+
+Classify files into modules such as:
+
+* Frontend / UI
+* Student Module
+* Teacher Module
+* Speech Module
+* Question Module
+* Evaluation Module
+* Validation Module
+* Storage / Database Module
+* Authentication
+* Result Module
+* API / Backend
+* Startup / Launcher Scripts
+* Configuration
+* Utilities
+* Unknown / possibly unused
+
+Create a table:
+
+| Path | Module | Purpose | Used By | Importance |
+| ---- | ------ | ------- | ------- | ---------- |
+
+Importance should be:
+
+* CRITICAL
+* IMPORTANT
+* OPTIONAL
+* POSSIBLY UNUSED
+
+---
+
+# 2. IDENTIFY THE TECHNOLOGY STACK
+
+Determine all technologies actually used.
+
+For example:
+
+Frontend:
+
+* React?
+* HTML/CSS/JS?
+* Streamlit?
+* Flask templates?
+* Electron?
+* something else?
+
+Backend:
+
+* Flask?
+* FastAPI?
+* Django?
+* Node/Express?
+* multiple backend services?
+
+AI:
+
+* OpenAI?
+* Gemini?
+* local LLM?
+* HuggingFace?
+* custom ML model?
+
+Speech:
+
+* speech-to-text library/service
+* text-to-speech
+* microphone recording
+* audio preprocessing
+
+Storage:
+
+* SQLite
+* MySQL
+* PostgreSQL
+* MongoDB
+* Firebase
+* JSON
+* CSV
+* local filesystem
+
+Also identify:
+
+* Python version assumptions
+* Node version assumptions
+* package managers
+* major dependencies
+* environment variables
+
+Produce a concise stack summary.
+
+---
+
+# 3. ANALYZE ALL STARTUP FILES
+
+Search for:
+
+* .bat
+* .cmd
+* .ps1
+* shell scripts
+* Python launcher files
+* npm scripts
+* package.json
+* subprocess calls
+* os.system()
+* start commands
+* terminal-launching commands
+
+I currently run a BAT file and it opens MULTIPLE CMD/terminal windows.
+
+I want you to trace exactly what happens.
+
+For EACH startup script explain:
+
+1. Which command executes first?
+2. Which directory does it enter?
+3. Which process does it launch?
+4. Which file/service does that process run?
+5. Which port does it listen on?
+6. Does it open another terminal?
+7. Does it wait for another service?
+8. Does it depend on environment variables?
+9. Does it launch frontend/backend/AI/speech/database?
+10. What happens if that process fails?
+
+Create this table:
+
+| Terminal / Process | Started By | Command | Service | Port | Depends On |
+| ------------------ | ---------- | ------- | ------- | ---- | ---------- |
+
+Then explain in simple words:
+
+"When I double-click/run X.bat, this happens..."
+
+Give the sequence as:
+
+Step 1 ->
+Step 2 ->
+Step 3 ->
+...
+
+---
+
+# 4. IDENTIFY ALL RUNNING SERVICES
+
+Find every server/service/process in the codebase.
+
+Look for things such as:
+
+* app.run(...)
+* uvicorn.run(...)
+* Flask(...)
+* FastAPI(...)
+* express.listen(...)
+* localhost
+* 127.0.0.1
+* ports like 3000, 5000, 8000, etc.
+* WebSocket servers
+* HTTP servers
+* subprocesses
+
+For every service provide:
+
+| Service | Entry File | Framework | Host | Port | Called By | Calls |
+| ------- | ---------- | --------- | ---- | ---- | --------- | ----- |
+
+Also detect possible:
+
+* port conflicts
+* duplicated servers
+* unnecessary services
+
+---
+
+# 5. TRACE FRONTEND -> BACKEND COMMUNICATION
+
+Search the frontend for:
+
+* fetch()
+* axios
+* requests
+* HTTP URLs
+* localhost URLs
+* API endpoint strings
+* WebSocket URLs
+
+Create a mapping:
+
+Frontend action
+↓
+API endpoint
+↓
+Backend function
+↓
+Internal module
+↓
+Storage / AI / Speech
+↓
+Returned response
+
+For EACH important endpoint give:
+
+| Endpoint | Method | Called From | Backend Handler | Purpose | Input | Output |
+| -------- | ------ | ----------- | --------------- | ------- | ----- | ------ |
+
+Also identify APIs that exist in backend but are never called.
+
+---
+
+# 6. UNDERSTAND THE TWO USER MODES
+
+The system appears to have TWO main user modes:
+
+A. TEACHER / ADMIN
+B. STUDENT / CANDIDATE
+
+Trace both separately.
+
+## TEACHER FLOW
+
+Find out exactly how a teacher:
+
+* enters the system
+* logs in, if login exists
+* creates/sets viva questions
+* selects subject/topic/difficulty if supported
+* stores questions
+* edits questions
+* deletes questions
+* selects question sets
+* views students
+* views student attempts
+* views marks/results
+* views individual answers
+* sees evaluation information
+
+Give the exact file/function/API/database flow.
+
+Example format:
+
+Teacher UI
+↓
+Question form
+↓
+POST /xxxx
+↓
+function abc()
+↓
+database table xyz
+
+If a feature DOES NOT exist, clearly say:
+"Not implemented."
+
+Do not assume it exists just because the UI suggests it.
+
+---
+
+# 7. TRACE STUDENT FLOW
+
+Explain exactly what happens when a student uses the system.
+
+Trace:
+
+Student opens application
+↓
+identification/login
+↓
+test/viva selection
+↓
+question loading
+↓
+question display
+↓
+voice recording
+↓
+speech-to-text
+↓
+answer validation
+↓
+evaluation
+↓
+score generation
+↓
+result storage
+↓
+result display
+
+For EVERY stage identify:
+
+* frontend file
+* backend route
+* main function
+* speech service
+* AI service/model
+* storage location
+* output
+
+Mention if stages happen asynchronously or synchronously.
+
+---
+
+# 8. DEEPLY ANALYZE SPEECH MODULE
+
+This is especially important.
+
+Identify the COMPLETE speech pipeline.
+
+Find:
+
+* microphone access
+* audio capture
+* recording format
+* WAV/MP3 conversion
+* temporary files
+* speech recognition
+* speech-to-text API/model
+* confidence score
+* silence detection
+* retries
+* errors
+* cleanup
+
+Show:
+
+Microphone
+↓
+Recording function
+↓
+Audio file/buffer
+↓
+Speech-to-text engine
+↓
+Transcript
+↓
+Next module
+
+Identify exactly which file/function performs each step.
+
+Also determine:
+
+* Does frontend record audio or backend?
+* Is audio uploaded over HTTP?
+* Is speech recognition local or cloud?
+* Are audio files permanently saved?
+* How does it handle bad/no speech?
+* Does speech run in its own server?
+* Which port?
+* Why is a separate speech terminal required, if any?
+
+---
+
+# 9. QUESTION MODULE
+
+Trace how questions work.
+
+Determine:
+
+* Where questions come from
+* manually entered by teacher?
+* AI generated?
+* database?
+* JSON file?
+* CSV?
+* hardcoded?
+* combination?
+
+Explain:
+
+Question creation
+↓
+Question storage
+↓
+Question selection
+↓
+Question delivery to student
+
+Find:
+
+* database/table/file names
+* question IDs
+* subject mapping
+* difficulty mapping
+* randomization logic
+* number of questions
+* duplicate prevention
+
+---
+
+# 10. VALIDATION MODULE
+
+Identify what "validation" means in this project.
+
+Possible meanings could be:
+
+* checking student identity
+* validating answer format
+* validating speech
+* validating question
+* detecting cheating
+* checking semantic relevance
+
+Do not guess.
+
+Read the code and explain EXACTLY:
+
+* where validation starts
+* input
+* rules/model
+* output
+* what happens after validation fails/passes
+
+---
+
+# 11. EVALUATION MODULE
+
+Trace answer evaluation completely.
+
+Determine:
+
+* What input is evaluated?
+* Transcript or audio?
+* Against model answer?
+* Against keywords?
+* Using LLM?
+* Embeddings?
+* cosine similarity?
+* custom NLP?
+* rubric?
+
+Explain exact scoring logic.
+
+If formula exists, show it.
+
+Trace:
+
+Student answer
+↓
+preprocessing
+↓
+evaluation
+↓
+score
+↓
+feedback
+↓
+storage
+
+Find:
+
+* max score
+* normalization
+* threshold
+* grading scale
+* AI prompt if used
+* retries/errors
+
+Also mention potential inconsistency or unreliable scoring logic.
+
+---
+
+# 12. DATABASE / STORAGE ARCHITECTURE
+
+Find ALL storage mechanisms.
+
+For every database/file storage explain:
+
+* file/path
+* technology
+* schema/table/collection
+* read functions
+* write functions
+* which module uses it
+
+If SQL is used, list tables and relationships.
+
+Example:
+
+Student
+
+* student_id
+* name
+
+Exam
+
+* exam_id
+* subject
+
+Question
+
+* question_id
+* exam_id
+* text
+
+Answer
+
+* answer_id
+* student_id
+* question_id
+* transcript
+* score
+
+Result
+
+* result_id
+* student_id
+* total_score
+
+Use the REAL schema from the project.
+
+Do not invent a schema.
+
+Create a relationship diagram in text.
+
+---
+
+# 13. RESULT STORAGE + RESULT VIEWING
+
+This is especially important.
+
+Trace:
+
+Evaluation completed
+↓
+individual marks
+↓
+total marks
+↓
+result object
+↓
+database/storage
+↓
+teacher result screen
+↓
+student result screen
+
+Answer these explicitly:
+
+1. Where exactly is a candidate's result stored?
+2. What identifies the candidate?
+3. Can teacher view all student results?
+4. Can teacher view individual student result?
+5. Can student view their own result?
+6. How does student result retrieval work?
+7. Is any authentication preventing one student from seeing another student's result?
+8. What happens when result isn't found?
+9. Are old attempts preserved?
+10. Can a student attempt multiple times?
+
+If any of these are missing, state that clearly.
+
+---
+
+# 14. AUTHENTICATION AND AUTHORIZATION
+
+Determine whether there is actual authentication.
+
+Check:
+
+* login
+* passwords
+* sessions
+* JWT
+* cookies
+* roles
+* teacher/student authorization
+
+Answer:
+
+Can a student call teacher APIs directly?
+
+Can a teacher-only page be opened without login?
+
+Can one student access another student's data?
+
+Identify security risks, but DO NOT fix them yet.
+
+---
+
+# 15. ENVIRONMENT AND CONFIGURATION
+
+Find:
+
+* .env
+* config files
+* API keys
+* secret keys
+* model configuration
+* ports
+* database configuration
+* paths
+
+Create:
+
+| Variable | Used In | Purpose | Required? |
+
+Do NOT print secret values.
+
+Only print variable names.
+
+Also identify hardcoded:
+
+* absolute file paths
+* localhost URLs
+* credentials
+* Windows-specific paths
+
+---
+
+# 16. TRACE IMPORT / DEPENDENCY RELATIONSHIPS
+
+For major internal modules, determine who imports/calls whom.
+
+Provide a dependency graph similar to:
+
+Frontend
+↓
+Main API
+├── Question Service
+├── Speech Service
+│   └── STT Engine
+├── Evaluation Service
+│   └── LLM
+└── Storage Service
+└── Database
+
+Use REAL relationships from the repository.
+
+---
+
+# 17. IDENTIFY DUPLICATE / DEAD / CONFUSING CODE
+
+Do NOT delete anything.
+
+Only identify suspicious items such as:
+
+* duplicate backend files
+* old versions
+* unused scripts
+* test files used as production
+* copied modules
+* duplicate databases
+* multiple versions of same API
+* unused endpoints
+* unnecessary terminals
+* hardcoded URLs
+* duplicated logic
+
+Create:
+
+| Item | Why Suspicious | Evidence | Safe to Review Later? |
+
+Use confidence:
+
+* HIGH
+* MEDIUM
+* LOW
+
+---
+
+# 18. IDENTIFY FAILURE POINTS
+
+Find where the system could easily break.
+
+Examples:
+
+* service startup order
+* service unavailable
+* wrong port
+* backend hardcoded localhost
+* DB missing
+* speech service offline
+* LLM API failure
+* microphone permissions
+* missing API key
+* race condition between services
+* temporary files
+* Windows-specific commands
+
+Create a failure flow:
+
+"If X fails -> Y breaks -> user sees Z"
+
+---
+
+# 19. EXPLAIN THE COMPLETE SYSTEM AS IF TEACHING A NEW DEVELOPER
+
+After the technical analysis, explain the system in VERY SIMPLE LANGUAGE.
+
+Pretend the reader joined the project today.
+
+Explain:
+
+"This project is basically made of X major pieces."
+
+Then explain each piece.
+
+Use an analogy where useful.
+
+Do NOT use unnecessary jargon.
+
+---
+
+# 20. CREATE A COMPLETE END-TO-END FLOW
+
+Create ONE master flow:
+
+START APPLICATION
+↓
+services start
+↓
+frontend opens
+↓
+user chooses teacher/student
+↓
+TEACHER FLOW / STUDENT FLOW
+↓
+question flow
+↓
+speech flow
+↓
+evaluation flow
+↓
+storage
+↓
+result
+
+Use filenames/functions/endpoints beside steps wherever possible.
+
+---
+
+# 21. CREATE MERMAID DIAGRAMS
+
+Provide Mermaid diagrams for:
+
+A. HIGH-LEVEL ARCHITECTURE
+
+B. STARTUP FLOW
+
+C. STUDENT VIVA FLOW
+
+D. TEACHER FLOW
+
+E. SPEECH PIPELINE
+
+F. RESULT STORAGE FLOW
+
+G. MODULE DEPENDENCY GRAPH
+
+Keep diagrams accurate to inspected code.
+
+---
+
+# 22. CREATE A "HOW TO RUN THIS PROJECT" GUIDE
+
+Based only on the actual repository, explain:
+
+Prerequisites
+
+Step 1:
+Step 2:
+Step 3:
+
+Mention:
+
+* which BAT/script to run
+* which services should start
+* expected terminals
+* expected ports
+* expected browser URL
+* required environment configuration
+
+Then provide a startup verification checklist:
+
+[ ] Service A running
+[ ] Service B running
+[ ] frontend reachable
+[ ] speech service reachable
+[ ] database reachable
+
+---
+
+# 23. CREATE A "HOW TO DEBUG IT" GUIDE
+
+Tell me which terminal corresponds to which service.
+
+For example:
+
+Terminal 1 = Main backend
+Terminal 2 = Speech
+Terminal 3 = Frontend
+
+Explain what kind of errors I should look for in each terminal.
+
+Also explain how to identify which service failed when the UI stops working.
+
+---
+
+# 24. DO NOT OPTIMIZE YET
+
+At the end, identify architectural problems, but DO NOT modify anything.
+
+Split them into:
+
+## CRITICAL
+
+Things that could cause incorrect results, data loss, security issues, or project failure.
+
+## HIGH
+
+Things causing instability or major maintenance problems.
+
+## MEDIUM
+
+Confusing architecture / duplication / hardcoding.
+
+## LOW
+
+Code cleanliness and minor technical debt.
+
+For every issue provide:
+
+| Issue | Severity | Evidence | Impact | Suggested Future Direction |
+
+Do NOT implement fixes.
+
+---
+
+# 25. FINAL ARCHITECT REPORT
+
+At the very end, produce a single consolidated report using exactly these sections:
+
+1. Executive Summary
+2. Technology Stack
+3. Project Folder Map
+4. Startup Architecture
+5. Running Services and Ports
+6. Frontend-to-Backend Communication
+7. Teacher Workflow
+8. Student Workflow
+9. Speech Workflow
+10. Question Workflow
+11. Validation Workflow
+12. Evaluation Workflow
+13. Database and Storage
+14. Result Storage and Retrieval
+15. Authentication and Security
+16. Configuration and Environment Variables
+17. Module Dependency Map
+18. Possibly Dead/Duplicate Code
+19. Failure Points
+20. Complete End-to-End Flow
+21. Mermaid Architecture Diagrams
+22. How to Run the Project
+23. How to Debug the Project
+24. Architectural Problems Ranked by Severity
+25. Questions / Unknowns Requiring Human Confirmation
+
+Be extremely thorough.
+
+Again: DO NOT MODIFY ANYTHING.
+
+This phase is PURELY PROJECT DISCOVERY AND ARCHITECTURE ANALYSIS.
