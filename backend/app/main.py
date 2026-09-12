@@ -7,6 +7,8 @@ from .db.session import get_engine
 
 app = FastAPI(title="AI Viva Backend", version=settings.app_version)
 
+from .api_auth import router as auth_router
+app.include_router(auth_router)
 
 @app.get("/health/live")
 def health_live() -> dict[str, str]:
