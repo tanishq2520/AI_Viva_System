@@ -20,9 +20,10 @@ function getPageMeta(pathname: string) {
 export function AdminLayout() {
   const navigate = useNavigate()
   const location = useLocation()
-  const { user, role, logout } = useAuth()
+  const { user, role, isLoading, logout } = useAuth()
   const meta = getPageMeta(location.pathname)
 
+  if (isLoading) return null;
   if (!user || role !== "admin") {
     return <Navigate to="/admin/login" replace />
   }

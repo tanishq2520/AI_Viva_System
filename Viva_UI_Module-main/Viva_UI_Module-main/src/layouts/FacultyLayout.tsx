@@ -1,5 +1,5 @@
 // src/layouts/FacultyLayout.tsx
-import { Outlet, useNavigate, useLocation } from "react-router-dom"
+import { Outlet, useNavigate, useLocation, Navigate } from "react-router-dom"
 import { Sidebar } from "@/components/common/Sidebar"
 import { Topbar } from "@/components/common/Topbar"
 import { useAuth } from "@/contexts/AuthContext"
@@ -18,8 +18,11 @@ function getPageMeta(pathname: string) {
 export function FacultyLayout() {
   const navigate = useNavigate()
   const location = useLocation()
-  const { user, logout } = useAuth()
+  const { user, role, isLoading, logout } = useAuth()
   const meta = getPageMeta(location.pathname)
+
+  if (isLoading) return null;
+  if (!user || role !== "faculty") return <Navigate to="/faculty/login" replace />;
 
   return (
     <div className="flex h-screen bg-slate-50 overflow-hidden">

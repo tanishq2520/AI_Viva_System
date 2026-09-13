@@ -27,6 +27,7 @@ export interface RegisterResult {
 interface AuthContextType {
   user: AuthUser | null
   role: Role
+  isLoading: boolean
   login: (email: string, role: Role, password?: string) => Promise<boolean>
   logout: () => void
   register: (data: any, role: Role) => Promise<RegisterResult>
@@ -38,6 +39,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined)
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<AuthUser | null>(null)
   const [role, setRole] = useState<Role>(null)
+  const [isLoading, setIsLoading] = useState(true)
 
   // Load active session on mount
   useEffect(() => {
@@ -66,6 +68,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           console.error("Auth me error:", e)
         }
       }
+      setIsLoading(false)
     }
     initAuth()
   }, [])
@@ -149,7 +152,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }
 
   return (
-    <AuthContext.Provider value={{ user, role, login, logout, register, updateUser }}>
+    <AuthContext.Provider value={{ user, role, isLoading, login, logout, register, updateUser }}>
       {children}
     </AuthContext.Provider>
   )

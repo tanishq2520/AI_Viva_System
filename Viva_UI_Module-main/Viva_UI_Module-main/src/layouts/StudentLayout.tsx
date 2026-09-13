@@ -1,5 +1,5 @@
 // src/layouts/StudentLayout.tsx
-import { Outlet, useNavigate } from "react-router-dom"
+import { Outlet, useNavigate, Navigate } from "react-router-dom"
 import { Sidebar } from "@/components/common/Sidebar"
 import { Topbar } from "@/components/common/Topbar"
 import { useLocation } from "react-router-dom"
@@ -20,8 +20,11 @@ function getPageMeta(pathname: string) {
 export function StudentLayout() {
   const navigate = useNavigate()
   const location = useLocation()
-  const { user, logout } = useAuth()
+  const { user, role, isLoading, logout } = useAuth()
   const meta = getPageMeta(location.pathname)
+
+  if (isLoading) return null;
+  if (!user || role !== "student") return <Navigate to="/student/login" replace />;
 
   const userRole = user ? [user.department, user.semester]
     .filter(Boolean)
