@@ -97,7 +97,7 @@ export function StudentRegister() {
     setServerError("")
     await new Promise((r) => setTimeout(r, 600))
 
-    const result = register(form, "student")
+    const result = await register(form, "student")
 
     setLoading(false)
     if (!result.success) {

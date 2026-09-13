@@ -31,7 +31,7 @@ export function FacultyLogin() {
     await new Promise((r) => setTimeout(r, 800))
     setLoading(false)
     
-    if (login(email, "faculty")) {
+    if (await login(email, "faculty", password)) {
       navigate("/faculty/dashboard")
     } else {
       setError("Invalid credentials or user not registered.")

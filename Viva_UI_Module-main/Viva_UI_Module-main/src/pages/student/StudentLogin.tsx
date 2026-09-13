@@ -33,7 +33,7 @@ export function StudentLogin() {
     await new Promise((r) => setTimeout(r, 800))
     setLoading(false)
     
-    if (login(email, "student")) {
+    if (await login(email, "student", password)) {
       navigate("/student/dashboard")
     } else {
       setError("Invalid credentials or user not registered.")

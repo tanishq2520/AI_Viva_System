@@ -1,4 +1,5 @@
 from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy import text
 
 from .config import settings
@@ -6,6 +7,14 @@ from .db.session import get_engine
 
 
 app = FastAPI(title="AI Viva Backend", version=settings.app_version)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:5173", "http://127.0.0.1:5173"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 from .api_auth import router as auth_router
 app.include_router(auth_router)

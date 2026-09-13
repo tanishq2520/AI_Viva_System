@@ -32,13 +32,9 @@ export function AdminLogin() {
     setLoading(false)
     
     // Auto-register admin if not exists (for demo purposes)
-    const usersStr = localStorage.getItem("viva_users") || "[]"
-    const users = JSON.parse(usersStr)
-    if (!users.find((u: any) => u.email === email && u.role === "admin")) {
-        register({ email, fullName: "Admin User", department }, "admin")
-    }
+    await register({ email, fullName: "Admin User", department, password }, "admin")
 
-    if (login(email, "admin")) {
+    if (await login(email, "admin", password)) {
       navigate("/admin/dashboard")
     } else {
       setError("Invalid credentials or user not registered.")

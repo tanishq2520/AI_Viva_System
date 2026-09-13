@@ -117,7 +117,7 @@ export function FacultyRegister() {
     setLoading(true)
     await new Promise((r) => setTimeout(r, 1000))
     
-    register(form, "faculty")
+    await register(form, "faculty")
     
     setLoading(false)
     setSuccess(true)
