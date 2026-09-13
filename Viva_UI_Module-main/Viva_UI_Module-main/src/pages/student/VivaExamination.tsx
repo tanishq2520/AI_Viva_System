@@ -89,13 +89,8 @@ export function VivaExamination() {
   const { user } = useAuth()
 
   const [currentQ, setCurrentQ] = useState(0)
-  const [questions, setQuestions] = useState<VivaQuestion[]>(() => {
-    const bankQs = loadBankQuestions()
-    return bankQs.length > 0 ? bankQs : demoQuestions
-  })
-  const [usingBankQuestions, setUsingBankQuestions] = useState(
-    () => loadBankQuestions().length > 0
-  )
+  const [questions, setQuestions] = useState<VivaQuestion[]>([])
+  const [usingBankQuestions, setUsingBankQuestions] = useState(false)
   const [answeredQuestions, setAnsweredQuestions] = useState<Set<number>>(new Set())
   const [answers, setAnswers] = useState<Record<number, string>>({})
   const [submitting, setSubmitting] = useState(false)
@@ -127,23 +122,20 @@ export function VivaExamination() {
   const speech = useSpeechQuestion()
   const recognition = useSpeechRecognition()
 
-  // ── Load questions: bank first, then backend, then demo ───────────────────
+  // ── Load questions: backend first, then demo fallback ───────────────────
   useEffect(() => {
-    const bankQs = loadBankQuestions()
-    if (bankQs.length > 0) {
-      setQuestions(bankQs)
-      setUsingBankQuestions(true)
-      return
-    }
     fetchQuestions()
       .then((items) => {
         if (items && items.length > 0) {
           setQuestions(items)
-          setUsingBankQuestions(false)
+        } else {
+          throw new Error("No questions returned")
         }
       })
-      .catch(() => {
-        setLoadError("Using built-in demo questions.")
+      .catch((err) => {
+        console.error("fetchQuestions error:", err)
+        setLoadError("Could not connect to backend. Using built-in demo questions.")
+        setQuestions(demoQuestions)
       })
   }, [])
 

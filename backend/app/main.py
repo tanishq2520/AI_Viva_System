@@ -17,7 +17,9 @@ app.add_middleware(
 )
 
 from .api_auth import router as auth_router
+from .api_viva import router as viva_router
 app.include_router(auth_router)
+app.include_router(viva_router)
 
 @app.get("/health/live")
 def health_live() -> dict[str, str]:
